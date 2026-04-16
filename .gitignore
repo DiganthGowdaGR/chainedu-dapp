@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+
+# Hardhat ignored files
+cache/
+artifacts/
+typechain-types/
+coverage/
+coverage.json
+
+# OS specific
+.DS_Store
+Thumbs.db

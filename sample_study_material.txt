@@ -1,0 +1,13 @@
+# Introduction to Blockchain Architecture
+
+A blockchain is a decentralized, distributed, and oftentimes public, digital ledger consisting of records called blocks that are used to record transactions across many computers so that any involved block cannot be altered retroactively.
+
+## Core Concepts
+1. Decentralization: No central authority controls the network.
+2. Cryptography: Uses SHA-256 hashing to secure the blocks.
+3. Consensus: Mechanisms like Proof of Work or Proof of Stake.
+
+## Smart Contracts
+Self-executing contracts with the terms of the agreement directly written into lines of code.
+
+(Generated for ChainEdu Demonstration)

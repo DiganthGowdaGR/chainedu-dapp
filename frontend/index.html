@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainEdu | Immutable Study Materials</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Ethers.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <h1 class="logo">ChainEdu<span>.</span></h1>
+            <div class="nav-links">
+                <button class="nav-btn active" data-target="browse-section">Browse</button>
+                <button class="nav-btn" data-target="upload-section">Upload</button>
+                <button class="nav-btn" data-target="verify-section">Verify</button>
+            </div>
+            <button id="connectWalletBtn" class="primary-btn">Connect Wallet</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+
+        <!-- BROWSE SECTION -->
+        <section id="browse-section" class="page-section active">
+            <div class="section-header">
+                <h2>Explore Materials</h2>
+                <div class="search-bar glass-panel">
+                    <input type="text" id="subjectFilter" placeholder="Filter by Subject...">
+                    <button class="icon-btn" onclick="app.loadDocuments()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="documents-grid" class="grid-layout">
+                <!-- Documents will be populated here -->
+                <div class="empty-state">Connect wallet to load documents.</div>
+            </div>
+        </section>
+
+        <!-- UPLOAD SECTION -->
+        <section id="upload-section" class="page-section">
+            <div class="form-container glass-panel">
+                <div class="form-header">
+                    <h2>Publish to Blockchain</h2>
+                    <p>Your document will be hashed, stored on simulated IPFS, and secured on the ledger.</p>
+                </div>
+                <form id="uploadForm" onsubmit="app.handleUpload(event)">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="upTitle" required placeholder="Advanced Calculus Notes">
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="upSubject" required placeholder="Mathematics">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="upDesc" rows="3" required placeholder="Key formulas and theorems..."></textarea>
+                    </div>
+                    <div class="form-group file-upload-wrapper">
+                        <label>Document File</label>
+                        <div class="drop-zone" id="uploadDropZone">
+                            <input type="file" id="upFile" required>
+                            <div class="drop-zone-text">
+                                <span class="primary-text">Click to browse</span> or drag and drop
+                            </div>
+                            <div id="uploadFileName" class="file-name"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn glow-btn" id="uploadBtn">
+                        <span class="btn-text">Publish Document</span>
+                        <div class="loader hidden"></div>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VERIFY SECTION -->
+        <section id="verify-section" class="page-section">
+            <div class="form-container glass-panel">
+                <div class="form-header">
+                    <h2>Verify Document Authenticity</h2>
+                    <p>Check if your local file mathematically matches the blockchain record.</p>
+                </div>
+                <form id="verifyForm" onsubmit="app.handleVerify(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Document ID</label>
+                            <input type="number" id="vDocId" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Version</label>
+                            <input type="number" id="vVersion" required min="1">
+                        </div>
+                    </div>
+                    <div class="form-group file-upload-wrapper">
+                        <label>Local File to Verify</label>
+                        <div class="drop-zone" id="verifyDropZone">
+                            <input type="file" id="vFile" required>
+                            <div class="drop-zone-text">
+                                <span class="primary-text">Click to browse</span>
+                            </div>
+                            <div id="verifyFileName" class="file-name"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn" id="verifyBtn">
+                        <span class="btn-text">Verify Match</span>
+                    </button>
+                    
+                    <div id="verifyResult" class="verification-result hidden">
+                        <!-- Result injected here -->
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- DOCUMENT DETAILS MODAL -->
+        <div id="docModal" class="modal-overlay hidden">
+            <div class="modal-content glass-panel">
+                <button class="close-btn" onclick="app.closeModal()">&times;</button>
+                <div id="modalBody">
+                    <!-- Content injected here -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
