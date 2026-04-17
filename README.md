@@ -108,4 +108,6 @@ npx serve frontend
 *   **RPC Error / Nonce too high**: If you restart your Node but your MetaMask account gets stuck with queued transactions, go to `MetaMask Settings -> Advanced -> Clear activity tab data` to reset it.
 
 ---
-*Sharath & Om*
+*Sharath & Om*a
+
+## Peer-to-Peer Study Material Sharing Platform

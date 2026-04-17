@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const CONTRACT_ABI = [
     "function uploadDocument(string _title, string _subject, string _description, string _cid, string _fileHash) returns (uint256)",
     "function updateDocument(uint256 _docId, string _cid, string _fileHash)",
@@ -18,13 +18,13 @@ const App = {
     init() {
         this.setupNavigation();
         this.setupFileInputs();
-        
+
         document.getElementById('connectWalletBtn').addEventListener('click', () => this.connectWallet());
-        
+
         // Auto-check if previously connected
         if (typeof window.ethereum !== 'undefined') {
             window.ethereum.on('accountsChanged', (accounts) => {
-                if(accounts.length > 0) {
+                if (accounts.length > 0) {
                     this.connectWallet();
                 } else {
                     this.userAddress = null;
@@ -49,7 +49,7 @@ const App = {
                     target.classList.add('active');
                 }
 
-                if(btn.dataset.target === 'browse-section' && this.contract) {
+                if (btn.dataset.target === 'browse-section' && this.contract) {
                     this.loadDocuments();
                 }
             });
@@ -89,7 +89,7 @@ const App = {
 
         try {
             this.provider = new ethers.BrowserProvider(window.ethereum);
-            
+
             // Force MetaMask to switch to Hardhat Local Network automatically
             try {
                 await window.ethereum.request({
@@ -113,16 +113,16 @@ const App = {
             const accounts = await this.provider.send("eth_requestAccounts", []);
             this.signer = await this.provider.getSigner();
             this.userAddress = await this.signer.getAddress();
-            
+
             this.contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, this.signer);
-            
+
             const btn = document.getElementById('connectWalletBtn');
             btn.innerText = `${this.userAddress.substring(0, 6)}...${this.userAddress.substring(38)}`;
             btn.style.background = "var(--success)";
 
             this.showToast("Wallet Connected!");
             this.loadDocuments();
-            
+
         } catch (error) {
             console.error(error);
             this.showToast("Failed to connect wallet", "error");
@@ -156,13 +156,13 @@ const App = {
 
         try {
             btnText.innerText = "Processing...";
-            
+
             const title = document.getElementById('upTitle').value;
             const subject = document.getElementById('upSubject').value;
             const desc = document.getElementById('upDesc').value;
             const file = document.getElementById('upFile').files[0];
 
-            if(!file) throw new Error("No file selected");
+            if (!file) throw new Error("No file selected");
 
             btnText.innerText = "Hashing locally...";
             const fileHash = await this.computeFileHash(file);
@@ -172,7 +172,7 @@ const App = {
 
             btnText.innerText = "Confirm Transaction in Wallet...";
             const tx = await this.contract.uploadDocument(title, subject, desc, cid, fileHash);
-            
+
             btnText.innerText = "Awaiting Confirmation...";
             await tx.wait();
 
@@ -195,7 +195,7 @@ const App = {
 
         const btnText = document.querySelector('#verifyBtn .btn-text');
         const resDiv = document.getElementById('verifyResult');
-        
+
         try {
             btnText.innerText = "Hashing...";
             resDiv.classList.add('hidden');
@@ -204,15 +204,15 @@ const App = {
             const version = document.getElementById('vVersion').value;
             const file = document.getElementById('vFile').files[0];
 
-            if(!file) throw new Error("No file selected");
+            if (!file) throw new Error("No file selected");
 
             const fileHash = await this.computeFileHash(file);
-            
+
             btnText.innerText = "Querying Blockchain...";
             const isValid = await this.contract.verifyDocument(docId, version, fileHash);
-            
+
             resDiv.classList.remove('hidden');
-            if(isValid) {
+            if (isValid) {
                 resDiv.className = "verification-result success";
                 resDiv.innerHTML = `✅ <strong>Authentic Document</strong><br/>The file matches the on-chain hash for Document #${docId} (v${version})`;
             } else {
@@ -230,14 +230,14 @@ const App = {
 
     async loadDocuments() {
         if (!this.contract) return;
-        
+
         const grid = document.getElementById('documents-grid');
         grid.innerHTML = '<div class="empty-state">Loading documents...</div>';
 
         try {
             const docs = await this.contract.getAllDocuments();
             const filter = document.getElementById('subjectFilter').value.toLowerCase();
-            
+
             let html = '';
             let count = 0;
 
@@ -251,7 +251,7 @@ const App = {
                 let uploader = doc.uploader;
 
                 if (filter && !subject.toLowerCase().includes(filter)) continue;
-                
+
                 count++;
                 html += `
                     <div class="doc-card" onclick="app.viewDocumentDetails(${id})">
@@ -266,7 +266,7 @@ const App = {
                 `;
             }
 
-            if(count === 0) {
+            if (count === 0) {
                 grid.innerHTML = `<div class="empty-state">No documents found.</div>`;
             } else {
                 grid.innerHTML = html;
@@ -281,7 +281,7 @@ const App = {
     async viewDocumentDetails(docId) {
         if (!this.contract) return;
         const modalBody = document.getElementById('modalBody');
-        
+
         try {
             document.getElementById('docModal').classList.add('active');
             modalBody.innerHTML = '<div class="empty-state">Fetching Chain Data...</div>';
@@ -289,20 +289,20 @@ const App = {
             // We refetch all docs to find ours, or we could have cached it
             const docs = await this.contract.getAllDocuments();
             const doc = docs.find(d => d.docId.toString() === docId.toString());
-            
-            if(!doc) throw new Error("Document not found");
+
+            if (!doc) throw new Error("Document not found");
 
             const versions = await this.contract.getDocumentVersions(docId);
-            
+
             let vHistoryHtml = '';
-            for(let i=0; i<versions.length; i++) {
+            for (let i = 0; i < versions.length; i++) {
                 const v = versions[i];
                 const date = new Date(Number(v.timestamp) * 1000).toLocaleString();
                 vHistoryHtml += `
                     <div class="version-item">
                         <h4>Version ${i + 1} &nbsp;<span style="font-size: 0.7em; color: var(--text-secondary);">${date}</span></h4>
                         <p><strong>IPFS CID:</strong> <a href="#" style="color:var(--accent-primary)">${v.cid}</a></p>
-                        <p><strong>Hash:</strong> ${v.fileHash.substring(0, 15)}...${v.fileHash.substring(v.fileHash.length-10)}</p>
+                        <p><strong>Hash:</strong> ${v.fileHash.substring(0, 15)}...${v.fileHash.substring(v.fileHash.length - 10)}</p>
                     </div>
                 `;
             }
@@ -345,7 +345,7 @@ const App = {
                 ` : ''}
             `;
 
-            if(isUploader) {
+            if (isUploader) {
                 const uFile = document.getElementById('uFile');
                 uFile.addEventListener('change', (e) => {
                     if (e.target.files.length > 0) {
@@ -362,19 +362,19 @@ const App = {
 
     async handleUpdate(e, docId) {
         e.preventDefault();
-        
+
         const btnText = document.querySelector('#updateBtn .btn-text');
         try {
             btnText.innerText = "Processing...";
             const file = document.getElementById('uFile').files[0];
-            if(!file) throw new Error("No file selected");
+            if (!file) throw new Error("No file selected");
 
             const fileHash = await this.computeFileHash(file);
             const cid = await this.mockIPFSUpload(file);
 
             btnText.innerText = "Confirm in Wallet...";
             const tx = await this.contract.updateDocument(docId, cid, fileHash);
-            
+
             btnText.innerText = "Awaiting Confirmation...";
             await tx.wait();
 
@@ -382,7 +382,7 @@ const App = {
             this.viewDocumentDetails(docId); // Refresh modal
             this.loadDocuments(); // Refresh grid
 
-        } catch(error) {
+        } catch (error) {
             console.error(error);
             this.showToast(error.shortMessage || error.message || "Update failed", "error");
             btnText.innerText = "Publish Rev";
@@ -399,9 +399,9 @@ const App = {
         toast.className = 'toast';
         toast.style.borderLeftColor = type === "success" ? "var(--success)" : "var(--danger)";
         toast.innerText = message;
-        
+
         container.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = "slideIn 0.3s forwards reverse";
             setTimeout(() => toast.remove(), 300);

@@ -1,0 +1,13 @@
+# Advanced Cryptography in Web3
+
+Cryptography represents the mathematical foundation of secure communication in decentralized networks.
+
+## SHA-256 (Secure Hash Algorithm)
+SHA-256 is a cryptographic hash function that outputs a value that is 256 bits long. It is deterministic, meaning the same input will always yield the exact same output hash. Even the smallest change in the input (like adding an extra space) will completely scramble the output hash.
+
+## Asymmetric Encryption
+Public-Key cryptography uses two keys:
+1. Public Key: Used by anyone to encrypt a message or verify a digital signature.
+2. Private Key: Kept secret, used to decrypt messages or create digital signatures (like your MetaMask Private Key).
+
+(Generated for ChainEdu Demonstration)
